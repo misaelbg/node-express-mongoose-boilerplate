@@ -24,7 +24,16 @@ class AuthController {
       return res.status(400).json({ message: 'E-mail já existente' });
     }
 
-    return res.json(newUser);
+    const token = await newUser.generateToken();
+
+    return res.json({
+      id: newUser.id,
+      email: newUser.email,
+      data_criacao: newUser.createdAt,
+      data_atualizacao: newUser.updatedAt,
+      ultimo_login: newUser.lastLogin,
+      token: token
+    });
   }
 
   async signIn (req, res) {
@@ -40,9 +49,18 @@ class AuthController {
       return res.status(401).json({ message: "Usuário e/ou senha inválidos" });
     }
 
+    const token = await user.generateToken();
+
+    // update last login date
+    await user.update({ lastLogin: Date.now() });
+
     return res.json({
-      user,
-      token: user.generateToken()
+      id: user.id,
+      email: user.email,
+      data_criacao: user.createdAt,
+      data_atualizacao: user.updatedAt,
+      ultimo_login: user.lastLogin,
+      token: token
     });
   }
 }

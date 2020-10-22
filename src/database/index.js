@@ -9,8 +9,8 @@ class Database {
     this.mongoUri = `mongodb+srv://${user}:${password}@${host}/${dbname}?retryWrites=true&w=majority`
     this.options = {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: false
+      useCreateIndex: true,
+      useUnifiedTopology: true
     }
 
     mongoose.Promise = Promise;

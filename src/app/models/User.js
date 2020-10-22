@@ -29,6 +29,9 @@ userSchema.pre('save', function(next) {
       next();
     });
   });
+
+  // Set default as creation date
+  this.lastLogin = this.createdAt;
 });
 
 userSchema.methods.checkPassword = function(senha) {

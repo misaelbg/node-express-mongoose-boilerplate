@@ -1,8 +1,19 @@
 import mongoose from 'mongoose';
 
-const userObject = {
-  nome: { type: String, required: true },
-  senha: { type: String, required: true },
+const userSchema = new mongoose.Schema({
+  nome: { 
+    type: String, 
+    required: true 
+  },
+  senha: { 
+    type: String, 
+    required: true 
+  },
+  lastLogin: {
+    type: Date, 
+    required: true, 
+    default: Date.now 
+  },
   email: {
     type: String,
     required: true,
@@ -10,13 +21,8 @@ const userObject = {
       unique: true
     }
   }
-}
+});
 
-const options = {
-  timestamps: {
-    data_criacao: 'created_at',
-    data_atualizacao: 'updated_at'
-  }
-}
+userSchema.set('timestamps', true);
 
-module.exports = new mongoose.Schema(userObject, options);
+module.exports = userSchema;

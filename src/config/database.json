@@ -1,0 +1,16 @@
+{
+  "test": {
+    "host": "dev.deymq.mongodb.net",
+    "user": "sky-test-user",
+    "password": "1nDxcLgUiTKi5NXC",
+    "port": null,
+    "dbname": "test"
+  },
+  "production": {
+    "host": "dev.deymq.mongodb.net",
+    "user": "sky-prod-user",
+    "password": "l6rHGYDmVUkmp4Em",
+    "port": null,
+    "dbname": "prod"
+  }
+}

@@ -5,15 +5,15 @@ class AuthController {
     const { email, nome, senha } = req.body;
 
     if (!email) {
-      return res.status(401).json({ message: 'Email é obrigatório' });
+      return res.status(401).json({ message: 'E-mail inválido' });
     }
 
     if (!nome) {
-      return res.status(401).json({ message: 'Nome é obrigatório' });
+      return res.status(401).json({ message: 'Nome inválido' });
     }
 
     if (!senha) {
-      return res.status(401).json({ message: 'Senha é obrigatório' });
+      return res.status(401).json({ message: 'Senha inválida' });
     }
 
     const newUser = new User({ nome, senha, email });
@@ -28,6 +28,7 @@ class AuthController {
 
     return res.json({
       id: newUser.id,
+      nome: newUser.nome,
       email: newUser.email,
       data_criacao: newUser.createdAt,
       data_atualizacao: newUser.updatedAt,
@@ -50,11 +51,12 @@ class AuthController {
     }
 
     const token = await user.generateToken();
-    // update last login date
-    await user.updateOne({ lastLogin: Date.now() });
+
+    await user.updateLastLogin();
 
     return res.json({
       id: user.id,
+      nome: user.nome,
       email: user.email,
       data_criacao: user.createdAt,
       data_atualizacao: user.updatedAt,

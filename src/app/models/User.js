@@ -3,32 +3,16 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import userSchema from '../../database/schemas/User';
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', async function(next) {
   const user = this;
 
   // only hash the password if it has been modified or new
-  if (!user.isModified('senha')) {
+  if (!await user.isModified('senha')) {
     return next();
   }
 
   // generate a salt
-  bcrypt.genSalt(process.env.SALT_FACTOR, (err, salt) => {
-    if (err) {
-      return next(err);
-    }
-
-    // hash the password using salt
-    bcrypt.hash(user.senha, salt, (err, hash) => {
-      if (err) {
-        return next(err);
-      }
-
-      // override the cleartext password with the hashed one
-      user.senha = hash;
-
-      next();
-    });
-  });
+  this.senha = await bcrypt.hash(this.senha, process.env.SALT_FACTOR || 8);
 
   // Set default as creation date
   this.lastLogin = this.createdAt;
@@ -40,6 +24,13 @@ userSchema.methods.checkPassword = function(senha) {
 
 userSchema.methods.generateToken = function() {
   return jwt.sign({ id: this.id }, process.env.APP_SECRET);
+};
+
+userSchema.methods.updateLastLogin = async function() {
+  await this.updateOne(
+    { email: this.email }, 
+    { $set: { lastLogin: Date.now() } }
+  );
 };
 
 module.exports = new mongoose.model('User', userSchema);

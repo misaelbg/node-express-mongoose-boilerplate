@@ -20,7 +20,11 @@ const userSchema = new mongoose.Schema({
     index: {
       unique: true
     }
-  }
+  },
+  telefones: [{
+    numero: String,
+    ddd: String
+  }]
 });
 
 userSchema.set('timestamps', true);

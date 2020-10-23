@@ -24,7 +24,7 @@ class Database {
   connect() {
     try {
       mongoose.connect(this.mongoUri, this.options);
-    } catch (error) {
+    } catch (err) {
       throw new Error(`unable to connect to database: ${this.mongoUri}`);
     }
   }
@@ -38,14 +38,11 @@ class Database {
   }
 
   getUri() {
-    if (process.env.MONGODB_URI) {
-      return process.env.MONGODB_URI;
+    if (!process.env.MONGODB_URI) {
+      throw new Error('The environment MONGODB_URI is not found');
     }
 
-    // load connection settings, by the environment
-    const configEnv = process.env.NODE_ENV === 'production' ? 'production' : 'development';
-    const { host, user, password, dbname } = config[configEnv];
-    return `mongodb+srv://${user}:${password}@${host}/${dbname}?retryWrites=true&w=majority`;
+    return process.env.MONGODB_URI;
   }
 }
 

@@ -22,6 +22,7 @@ class App {
   }
 
   database () {
+    // just create a new connection outside the test environment
     if (process.env.NODE_ENV !== 'test') {
       database.connect();
     }

@@ -1,43 +1,28 @@
 import bcrypt from 'bcryptjs';
 import faker from 'faker';
+import dbHandler from './db-handler';
 import User from '../src/app/models/User';
-import mongoose from 'mongoose';
-import MongoMemoryServer from 'mongodb-memory-server';
 
 describe('User', () => {
-  let testDatabase;
+  /**
+  * Connect to a new in-memory database before running any tests.
+  */
+  beforeAll(async () => await dbHandler.connect());
 
-  beforeAll(async () => {
-    testDatabase = new MongoMemoryServer();
-    const mongoUri = await testDatabase.getUri();
+  /**
+  * Clear all test data after every test.
+  */
+  afterEach(async () => await dbHandler.clearDatabase());
 
-    mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    });
-  });
+  /**
+  * Remove and close the db and server.
+  */
+  afterAll(async () => await dbHandler.closeDatabase());
 
-  afterAll(async done => {
-    mongoose.disconnect(done);
-    await testDatabase.stop();
-  });
-
-  afterEach(async () => {
-    const collections = await mongoose.connection.db.collections();
-
-    for (let collection of collections) {
-      await collection.deleteMany();
-    }
-  });
-
+  /** 
+  * Tests whether the encryption generated for the password is correct
+  */
   it('should encrypt user password', async () => {
-    const mockUser = {
-      nome: faker.name.findName(),
-      email: faker.internet.email(),
-      senha: faker.internet.password()
-    };
-
     const user = new User(mockUser);
 
     await user.save();
@@ -47,3 +32,18 @@ describe('User', () => {
     expect(compareHash).toBe(true);
   });
 });
+
+/**
+* Complete user example.
+*/
+const mockUser = {
+  nome: faker.name.findName(),
+  email: faker.internet.email(),
+  senha: faker.internet.password(),
+  telefones: [
+    {
+      numero: faker.phone.phoneNumber(),
+      ddd: "11"
+    }
+  ]
+};

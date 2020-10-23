@@ -1,44 +1,29 @@
 import request from 'supertest';
 import faker from 'faker';
-import mongoose from 'mongoose';
-import MongoMemoryServer from 'mongodb-memory-server';
 import UserModel from '../src/app/models/User';
+import dbHandler from './db-handler';
 import app from '../src/app';
 
 describe('Authentication', () => {
-  let testDatabase;
+  /**
+  * Connect to a new in-memory database before running any tests.
+  */
+  beforeAll(async () => await dbHandler.connect());
 
-  beforeAll(async () => {
-    testDatabase = new MongoMemoryServer();
-    const mongoUri = await testDatabase.getUri();
+  /**
+  * Clear all test data after every test.
+  */
+  afterEach(async () => await dbHandler.clearDatabase());
 
-    mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    });
-  });
+  /**
+  * Remove and close the db and server.
+  */
+  afterAll(async () => await dbHandler.closeDatabase());
 
-  afterAll(async done => {
-    mongoose.disconnect(done);
-    await testDatabase.stop();
-  });
-
-  afterEach(async () => {
-    const collections = await mongoose.connection.db.collections();
-
-    for (let collection of collections) {
-      await collection.deleteMany();
-    }
-  });
-
-  it("should create a new user", async () => {
-    const mockUser = {
-      nome: faker.name.findName(),
-      email: faker.internet.email(),
-      senha: faker.internet.password()
-    };
-
+  /**
+  * Tests that a valid user can be created.
+  */
+it("should create a new user", async () => {
     const response = await request(app)
       .post("/signup")
       .send(mockUser);
@@ -46,13 +31,10 @@ describe('Authentication', () => {
     expect(response.status).toBe(200);
   });
 
-  it("should not create a new user if already exists", async () => {
-    const mockUser = {
-      nome: faker.name.findName(),
-      email: faker.internet.email(),
-      senha: faker.internet.password()
-    };
-
+  /**
+  * Tests whether an existing user can be created
+  */
+it("should not create a new user if already exists", async () => {
     const user = new UserModel(mockUser);
 
     await user.save();
@@ -69,13 +51,10 @@ describe('Authentication', () => {
     );
   });
 
-  it("should authenticate with valid credentials", async () => {
-    const mockUser = {
-      nome: faker.name.findName(),
-      email: faker.internet.email(),
-      senha: faker.internet.password()
-    };
-
+  /**
+  * Test if a valid user can login without errors
+  */
+it("should authenticate with valid credentials", async () => {
     const user = new UserModel(mockUser);
 
     await user.save();
@@ -87,13 +66,13 @@ describe('Authentication', () => {
     expect(response.status).toBe(200);
   });
 
-  it("should not authenticate with invalid credentials", async () => {
+  /**
+  * Test if a invalid user can login
+  */
+it("should not authenticate with invalid credentials", async () => {
     const response = await request(app)
       .post("/signin")
-      .send({
-        email: faker.internet.email(),
-        senha: faker.internet.password()
-      });
+      .send(mockUser);
 
     expect(response.status).toBe(401);
     expect(response.body).toEqual(
@@ -103,13 +82,10 @@ describe('Authentication', () => {
     );
   });
 
-  it("should return jwt token when authenticated", async () => {
-    const mockUser = {
-      nome: faker.name.findName(),
-      email: faker.internet.email(),
-      senha: faker.internet.password()
-    };
-
+  /**
+  * Test whether token is being generated after login
+  */
+it("should return jwt token when authenticated", async () => {
     const user = new UserModel(mockUser);
 
     await user.save();
@@ -122,3 +98,18 @@ describe('Authentication', () => {
   });
 
 });
+
+/**
+* Complete user example.
+*/
+const mockUser = {
+  nome: faker.name.findName(),
+  email: faker.internet.email(),
+  senha: faker.internet.password(),
+  telefones: [
+    {
+      numero: faker.phone.phoneNumber(),
+      ddd: "11"
+    }
+  ]
+};

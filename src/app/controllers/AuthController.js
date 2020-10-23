@@ -2,7 +2,7 @@ import User from '../models/User';
 
 class AuthController {
   async signUp (req, res) {
-    const { email, nome, senha } = req.body;
+    const { email, nome, senha, telefones } = req.body;
 
     if (!email) {
       return res.status(401).json({ message: 'E-mail inválido' });
@@ -16,7 +16,7 @@ class AuthController {
       return res.status(401).json({ message: 'Senha inválida' });
     }
 
-    const newUser = new User({ nome, senha, email });
+    const newUser = new User({ nome, senha, email, telefones });
 
     try {
       await newUser.save();
@@ -33,6 +33,7 @@ class AuthController {
       data_criacao: newUser.createdAt,
       data_atualizacao: newUser.updatedAt,
       ultimo_login: newUser.lastLogin,
+      telefones: newUser.telefones,
       token: token
     });
   }
@@ -61,6 +62,7 @@ class AuthController {
       data_criacao: user.createdAt,
       data_atualizacao: user.updatedAt,
       ultimo_login: user.lastLogin,
+      telefones: user.telefones,
       token: token
     });
   }

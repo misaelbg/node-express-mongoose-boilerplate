@@ -1,5 +1,5 @@
 {
-  "test": {
+  "development": {
     "host": "dev.deymq.mongodb.net",
     "user": "sky-test-user",
     "password": "1nDxcLgUiTKi5NXC",

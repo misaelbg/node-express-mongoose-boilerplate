@@ -23,7 +23,8 @@ const userSchema = new mongoose.Schema({
   },
   telefones: [{
     numero: String,
-    ddd: String
+    ddd: String,
+    _id: false
   }]
 });
 

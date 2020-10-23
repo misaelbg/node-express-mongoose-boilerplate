@@ -1,26 +1,30 @@
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
 
+/**
+ * Token validation module
+ */
 module.exports = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ message: 'Token not provided' });
+    return res.status(401).json({ message: 'Não autorizado' });
   }
 
   if (!authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Token is not valid' });
+    return res.status(401).json({ message: 'Não autorizado' });
   }
 
   const [, token] = authHeader.split(' ');
 
   try {
+    // Check 
     const decoded = await promisify(jwt.verify)(token, process.env.APP_SECRET);
 
     req.userId = decoded.id;
 
     return next();
   } catch (err) {
-    return res.status(401).json({ message: 'Token invalid' });
+    return res.status(401).json({ message: 'Não autorizado' });
   }
 };

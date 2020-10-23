@@ -31,6 +31,21 @@ describe('User', () => {
 
     expect(compareHash).toBe(true);
   });
+
+  /** 
+  * Test the difference in minutes between two dates
+  */
+  it('should be compare time difference', async () => {
+    const user = new User(mockUser);
+    // Set fake last login date-time
+    user.lastLogin = "2020-10-23T12:42:01.044Z";
+    // Comparision date-time
+    const compareDateTime = new Date("2020-10-23T12:45:01.044Z");
+    
+    const minutes = user.lastLoginBefore(compareDateTime);
+
+    expect(minutes).toBe(3);
+  });
 });
 
 /**

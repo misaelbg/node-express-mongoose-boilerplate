@@ -43,11 +43,20 @@ userSchema.methods.generateToken = function() {
  * Update the User last login date
  * @returns {void}
  */
-userSchema.methods.updateLastLogin = async function() {
-  await this.updateOne(
-    { email: this.email }, 
-    { $set: { lastLogin: Date.now() } }
-  );
+userSchema.methods.updateLastLoginTime = async function() {
+  await this.updateOne({ lastLogin: Date.now() });
+};
+
+/**
+ * Compare date-time with last login and return difference in minutes
+ * @param {Date} date - Current time-date to compare
+ * @returns {Number} - difference in minutes
+ */
+userSchema.methods.lastLoginBefore = function(date) {
+  const lastLogin = new Date(this.lastLogin);
+  let diff = (date.getTime() - lastLogin.getTime()) / 1000;
+  diff /= 60;
+  return Math.abs(Math.round(diff));
 };
 
 module.exports = new mongoose.model('User', userSchema);

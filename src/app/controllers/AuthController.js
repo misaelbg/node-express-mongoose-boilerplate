@@ -53,7 +53,7 @@ class AuthController {
 
     const token = await user.generateToken();
 
-    await user.updateLastLogin();
+    await user.updateLastLoginTime();
 
     return res.json({
       id: user.id,

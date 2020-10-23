@@ -4,7 +4,7 @@ import { promisify } from 'util';
 /**
  * Token validation module
  */
-module.exports = async (req, res, next) => {
+export default async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {

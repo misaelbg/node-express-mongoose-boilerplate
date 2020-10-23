@@ -13,4 +13,4 @@ routes.use(AuthMiddleware);
 
 routes.get('/user/:id', UserController.find);
 
-module.exports = routes;
+export default routes;

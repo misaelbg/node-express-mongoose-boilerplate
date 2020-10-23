@@ -50,9 +50,8 @@ class AuthController {
     }
 
     const token = await user.generateToken();
-
     // update last login date
-    await user.update({ lastLogin: Date.now() });
+    await user.updateOne({ lastLogin: Date.now() });
 
     return res.json({
       id: user.id,

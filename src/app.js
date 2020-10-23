@@ -22,7 +22,9 @@ class App {
   }
 
   database () {
-    database.connect();
+    if (process.env.NODE_ENV !== 'test') {
+      database.connect();
+    }
   }
 
   routes() {

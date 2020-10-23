@@ -1,15 +1,63 @@
-import bcrypt from 'bcryptjs';
-import app from '../src/app';
 import request from 'supertest';
+import faker from 'faker';
+import mongoose from 'mongoose';
+import MongoMemoryServer from 'mongodb-memory-server';
+import UserModel from '../src/app/models/User';
+import app from '../src/app';
 
 describe('Authentication', () => {
+  let testDatabase;
+
+  beforeAll(async () => {
+    testDatabase = new MongoMemoryServer();
+    const mongoUri = await testDatabase.getUri();
+
+    mongoose.connect(mongoUri, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useUnifiedTopology: true,
+    });
+  });
+
+  afterAll(async done => {
+    mongoose.disconnect(done);
+    await testDatabase.stop();
+  });
+
+  afterEach(async () => {
+    const collections = await mongoose.connection.db.collections();
+
+    for (let collection of collections) {
+      await collection.deleteMany();
+    }
+  });
+
+  it("should create a new user", async () => {
+    const response = await request(app)
+      .post("/signup")
+      .send({
+        nome: faker.name.findName(),
+        email: faker.internet.email(),
+        senha: faker.internet.password()
+      });
+
+    expect(response.status).toBe(200);
+  });
+
   it("should authenticate with valid credentials", async () => {
+    const mockUser = {
+      nome: faker.name.findName(),
+      email: faker.internet.email(),
+      senha: faker.internet.password()
+    };
+
+    const user = new UserModel(mockUser);
+
+    await user.save();
+
     const response = await request(app)
       .post("/signin")
-      .send({
-        email: 'misa-er@hotmail.com',
-        senha: "123456"
-      });
+      .send(mockUser);
 
     expect(response.status).toBe(200);
   });
@@ -18,33 +66,29 @@ describe('Authentication', () => {
     const response = await request(app)
       .post("/signin")
       .send({
-        email: 'misa-er@hotmail.com',
-        senha: "543216"
+        email: faker.internet.email(),
+        senha: faker.internet.password()
       });
 
     expect(response.status).toBe(401);
   });
 
   it("should return jwt token when authenticated", async () => {
+    const mockUser = {
+      nome: faker.name.findName(),
+      email: faker.internet.email(),
+      senha: faker.internet.password()
+    };
+
+    const user = new UserModel(mockUser);
+
+    await user.save();
+
     const response = await request(app)
       .post("/signin")
-      .send({
-        email: 'misa-er@hotmail.com',
-        senha: "123456"
-      });
+      .send(mockUser);
 
     expect(response.body).toHaveProperty("token");
   });
 
-  it("should create a new user", async () => {
-    const response = await request(app)
-      .post("/signup")
-      .send({
-        nome: 'Misael',
-        email: 'misa-er@hotmail.com',
-        senha: "123456"
-      });
-
-    expect(response.status).toBe(200);
-  });
 });

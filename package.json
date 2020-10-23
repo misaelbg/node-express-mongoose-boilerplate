@@ -7,11 +7,10 @@
     "test": "jest --runInBand --detectOpenHandles",
     "lint:fix": "eslint --fix '**/*.js' --ignore-pattern node_modules/",
     "lint": "eslint '**/*.js' --ignore-pattern node_modules/",
-    "build": "./node_modules/.bin/babel -d ./build ./src",
+    "build": "babel -d ./build ./src",
     "prebuild": "rm -rf build/*",
     "dev": "NODE_ENV=development nodemon --exec babel-node src/server.js --ignore __tests__",
-    "start": "NODE_ENV=production node ./build/server.js",
-    "prestart": "npm run build"
+    "start": "NODE_ENV=production node ./build/server.js"
   },
   "author": "",
   "license": "ISC",

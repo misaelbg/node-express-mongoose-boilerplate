@@ -16,9 +16,11 @@ var _cors = _interopRequireDefault(require("cors"));
 
 var _routes2 = _interopRequireDefault(require("./routes"));
 
-var _database2 = _interopRequireDefault(require("./database"));
+var _database = _interopRequireDefault(require("./database"));
 
-_dotenv["default"].config(process.env.NODE_ENV === 'production' ? '.env' : '.test.env');
+_dotenv["default"].config({
+  path: process.env.NODE_ENV === "production" ? ".env" : ".env.testing"
+});
 
 var App = /*#__PURE__*/function () {
   function App() {
@@ -40,7 +42,7 @@ var App = /*#__PURE__*/function () {
     value: function database() {
       // just create a new connection outside the test environment
       if (process.env.NODE_ENV !== 'test') {
-        _database2["default"].connect();
+        new _database["default"](process.env.MONGODB_URI).connect();
       }
     }
   }, {

@@ -3,9 +3,11 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import routes from './routes';
-import database from './database';
+import Database from './database';
 
-dotenv.config(process.env.NODE_ENV === 'production' ? '.env' : '.test.env');
+dotenv.config({
+  path: process.env.NODE_ENV === "production" ? ".env" : ".env.testing"
+})
 
 class App {
   constructor() {
@@ -24,7 +26,7 @@ class App {
   database () {
     // just create a new connection outside the test environment
     if (process.env.NODE_ENV !== 'test') {
-      database.connect();
+      new Database(process.env.MONGODB_URI).connect();
     }
   }
 

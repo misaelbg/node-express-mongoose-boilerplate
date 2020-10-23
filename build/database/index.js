@@ -2,22 +2,26 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
-var _database = _interopRequireDefault(require("../config/database.json"));
-
 var Database = /*#__PURE__*/function () {
   /**
   * Prepare database connection URL and Options
+  * @param {String} uri - used to create a Mongo instance
   * @param {Object} options - Options for the new connection
   */
-  function Database(options) {
+  function Database(uri, options) {
     (0, _classCallCheck2["default"])(this, Database);
-    this.mongoUri = this.getUri();
+    this.mongoUri = uri;
     this.options = options || {
       useNewUrlParser: true,
       useCreateIndex: true,
@@ -36,7 +40,7 @@ var Database = /*#__PURE__*/function () {
     value: function connect() {
       try {
         _mongoose["default"].connect(this.mongoUri, this.options);
-      } catch (error) {
+      } catch (err) {
         throw new Error("unable to connect to database: ".concat(this.mongoUri));
       }
     }
@@ -50,24 +54,9 @@ var Database = /*#__PURE__*/function () {
     value: function disconnect() {
       _mongoose["default"].connection.close();
     }
-  }, {
-    key: "getUri",
-    value: function getUri() {
-      if (process.env.MONGODB_URI) {
-        return process.env.MONGODB_URI;
-      } // load connection settings, by the environment
-
-
-      var configEnv = process.env.NODE_ENV === 'production' ? 'production' : 'development';
-      var _config$configEnv = _database["default"][configEnv],
-          host = _config$configEnv.host,
-          user = _config$configEnv.user,
-          password = _config$configEnv.password,
-          dbname = _config$configEnv.dbname;
-      return "mongodb+srv://".concat(user, ":").concat(password, "@").concat(host, "/").concat(dbname, "?retryWrites=true&w=majority");
-    }
   }]);
   return Database;
 }();
 
-module.exports = new Database();
+var _default = Database;
+exports["default"] = _default;

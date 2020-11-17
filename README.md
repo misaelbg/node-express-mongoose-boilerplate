@@ -1,4 +1,4 @@
-# RESTful API Boilerplate with Nodejs, Express, Mongoose and Jest.
+# RESTful API Node Server Boilerplate
 
 ## Getting Started
 

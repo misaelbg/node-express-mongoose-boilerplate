@@ -7,8 +7,8 @@
 Clone the repo:
 
 ```bash
-git clone https://github.com/misaelbg/sky-backend-test.git
-cd sky-backend-test
+git clone https://github.com/misaelbg/node-express-mongoose-boilerplate.git
+cd node-express-mongoose-boilerplate
 ```
 
 Install the dependencies:

@@ -1,4 +1,4 @@
-# sky-backend-test with Nodejs, Express, Mongoose and Jest.
+# RESTful API Boilerplate with Nodejs, Express, Mongoose and Jest.
 
 ## Getting Started
 
